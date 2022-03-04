@@ -1,0 +1,12 @@
+{
+    "name" : "Level1",
+    "next_level" : "Level2",
+    "bricks" : [
+        {
+            "x" : 250,
+            "y" : 0,
+            "id" : "brick_red",
+            "powerup" : "paddleup"
+        }
+    ]
+}
