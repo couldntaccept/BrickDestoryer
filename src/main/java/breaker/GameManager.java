@@ -14,7 +14,10 @@ public class GameManager {
 	Paddle paddle;
 
 	int timer = 0;
-	String stage = "ON";
+	int stage = 0;
+	// stage: 0 -- ON, 1 -- WIN, 2 -- LOST, 3 -- NEXT LEVEL
+
+
 
 	public GameManager(ArrayList<Ball> balls, ArrayList<ArrayList<Brick>> brick_levels,
 			Paddle paddle, ArrayList<PowerUp> powerUps){
@@ -24,50 +27,47 @@ public class GameManager {
 			this.defaultPaddle = paddle;
 			this.paddle = paddle;
 			this.powerUps = powerUps;
-			}
+	}
 
 	public void tick() {
 
-		if (timer == 0) {stage = "ON";}
-		if (stage.equals("ON")) {
-			bricks = brick_levels.get(level);
-			Ball.tick(balls, bricks, paddle, powerUps);
-			Paddle.tick(this.paddle);
-			PowerUp.tick(powerUps, paddle, balls);
-			Brick.tick(brick_levels.get(level));
-			boolean counter = Brick.tick(brick_levels.get(level));
-			if ( !counter && level < brick_levels.size()) {
-				level += 1;
-				timer += 120;
-				stage = "NEXTLEVEL";
-				paddle = defaultPaddle;
-				powerUps = new ArrayList<PowerUp>();
-				balls = defaultBalls;
-				Audio.levelComplete();
+		if (timer == 0) {stage = 0;}
+		switch (stage) {
+			case 0 -> {
+				bricks = brick_levels.get(level);
+				Ball.tick(balls, bricks, paddle, powerUps);
+				Paddle.tick(this.paddle);
+				PowerUp.tick(powerUps, paddle, balls);
+				Brick.tick(brick_levels.get(level));
+				boolean counter = Brick.tick(brick_levels.get(level));
+				if (!counter && level < brick_levels.size()) {
+					this.defaultProgress();
+					level += 1;
+					stage = 3;
+					Audio.levelComplete();
+				}
+				if (level == brick_levels.size()) {
+					this.defaultProgress();
+					level = 0;
+					stage = 1;
+					Audio.win();
+				}
+				if (balls.size() == 0) {
+					this.defaultProgress();
+					level = 0;
+					stage = 2;
+					Audio.lost();
+				}
 			}
-			if (level == brick_levels.size()) {
-				timer += 120;
-				stage = "WIN";
-				paddle = defaultPaddle;
-				powerUps = new ArrayList<PowerUp>();
-				balls = defaultBalls;
-				level = 0;
-				Audio.win();
-			}
-			if (balls.size() == 0) {
-				timer += 120;
-				stage = "LOST";
-				paddle = defaultPaddle;
-				powerUps = new ArrayList<PowerUp>();
-				balls = defaultBalls;
-				level = 0;
-				Audio.lost();
-			}
-		} else if (stage.equals("NEXTLEVEL")) {
-			timer --;
-		} else if (stage.equals("WIN") || stage.equals("LOST")) {
-			timer --;
+			case 1, 2, 3 -> timer--;
 		}
+	}
+
+	public void defaultProgress(){
+		timer += 120;
+		paddle = defaultPaddle;
+		powerUps = new ArrayList<PowerUp>();
+		balls = defaultBalls;
 	}
 }
 

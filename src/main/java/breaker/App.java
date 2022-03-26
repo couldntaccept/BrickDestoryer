@@ -90,13 +90,13 @@ public class App extends PApplet {
         background(0);
         image(bgImg, 0, 0);
         gm.tick();
-        if (gm.stage.equals("WIN")) {
+        if (gm.stage == 1 ) {
             text("YOU WIN !", 270, 190);
 
-        }else if (gm.stage.equals("LOST")) {
+        }else if (gm.stage == 2) {
             text("GAME OVER", 260, 190);
 
-        }else if (gm.stage.equals("NEXTLEVEL")) {
+        }else if (gm.stage == 3) {
             text("NEXT LEVEL", 255, 190);
 
         }
